@@ -1,0 +1,26 @@
+{
+  "name": "recetas_culinarias",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ValentinaDelgadoRincon/Recetas_Culinarias.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/ValentinaDelgadoRincon/Recetas_Culinarias/issues"
+  },
+  "homepage": "https://github.com/ValentinaDelgadoRincon/Recetas_Culinarias#readme",
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "mongodb": "^6.20.0"
+  }
+}
