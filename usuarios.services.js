@@ -10,7 +10,7 @@ export async function crearUsuario(datosUsuario) {
         throw new Error("Todos los campos son obligatorios: nombre, email y contraseña");
     }
 
-    // Comprobar si el usuario ya existe
+    // Comprobar si el usuario ya existe 
     const usuarioExistente = await collection.findOne({ email: datosUsuario.email });
     if (usuarioExistente) {
         throw new Error("El correo ya está registrado en la plataforma");
