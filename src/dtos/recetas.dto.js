@@ -9,6 +9,5 @@ export const crearRecetaDTO = [
 ];
 
 export const editarTituloRecetaDTO = [
-    body("id").isInt({ min: 1 }).withMessage("El id debe ser un entero positivo"),
     body("titulo").isString().trim().notEmpty().withMessage("EL titulo de la receta es obligatorio"),
 ]

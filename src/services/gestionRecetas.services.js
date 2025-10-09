@@ -54,7 +54,7 @@ export async function eliminarReceta(id) {
 }
 
 export async function recetasUsuarioEspecifico(nombreUsuario) {
-    const usuario = await obtenerDB().collection(COLECCION_INGREDIENTES).find({nombre:nombreUsuario});
+    const usuario = await obtenerDB().collection(COLECCION_USUARIO).find({nombre:nombreUsuario});
 
     if(!usuario) throw new Error("Usuario no encontrado");
     const recetas = await obtenerDB().collection(COLECCION_RECETA).find({usuario:nombreUsuario}).toArray();

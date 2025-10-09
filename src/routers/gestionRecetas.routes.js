@@ -16,8 +16,8 @@ const router = Router();
 router.post("/",crearRecetaDTO,validationDTO,crearRecetas);
 router.get("/listar",listarReceta);
 router.get("/consultar",consultarRecetas);
-router.patch("/",editarTituloRecetaDTO,validationDTO,editarReceta);
-router.delete("/",eliminarRecetas);
-router.get("/usario",recetaUserEspecifico);
+router.patch("/:id",editarTituloRecetaDTO,validationDTO,editarReceta);
+router.delete("/:id",eliminarRecetas);
+router.get("/usuario",recetaUserEspecifico);
 
 export default router;

@@ -61,7 +61,7 @@ export async function eliminarRecetas(req, res) {
 
 export async function recetaUserEspecifico(req, res) {
  try {
-    const {nombreusuario} = req.body;
+    const {nombreusuario} = req.query;
 
     if(!nombreusuario) return res.status(400).json({error:"Falta nombre del cliente"});
     const resultado = await recetasUsuarioEspecifico(nombreusuario);
