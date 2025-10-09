@@ -8,8 +8,8 @@ import {
     recetaUserEspecifico
 } from "../controllers/gestionRecestas.controllers.js";
 
-import { crearRecetaDTO, editarTituloRecetaDTO } from "../dtos/recetas.dto";
-import { validationDTO } from "../middlewares/validationDTO";
+import { crearRecetaDTO, editarTituloRecetaDTO } from "../dtos/recetas.dto.js";
+import { validationDTO } from "../middlewares/validationDTO.js";
 
 const router = Router();
 

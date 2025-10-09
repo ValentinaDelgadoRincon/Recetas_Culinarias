@@ -1,7 +1,7 @@
 //imports
 import express from "express";
 import 'dotenv/config'
-import { conectarBD } from "./src/config/db.js";
+import { conectarDB } from "./src/config/db.js";
 import routercrearRecetas from "./src/routers/gestionRecetas.routes.js"
 
 
@@ -19,7 +19,7 @@ app.get("/health", (req, res)=>{
 
 
 // Excecution
-conectarBD().then(()=>{
+conectarDB().then(()=>{
     app.listen(process.env.PORT, ()=>{
         console.log(`Backend escuchando en http://${process.env.HOST_NAME}:${process.env.PORT}`)
     })
