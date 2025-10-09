@@ -127,7 +127,7 @@ export async function eliminarUsuario(id) {
     const eliminarUsuario = await usuarios.deleteOne({ _id: new ObjectId(id) });
 
     if (eliminarUsuario.deletedCount === 0) {
-        throw new Error("No se pudo eliminar el usuario");
+        throw new Error("No se logró eliminar el usuario");
     }
 
     return {
