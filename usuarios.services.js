@@ -109,7 +109,7 @@ export async function eliminarUsuario(id) {
     const usuarios = db.collection("usuarios");
     const recetas = db.collection("recetas");
 
-    // Validar ID
+    // Validar ID 
     if (!ObjectId.isValid(id)) {
         throw new Error("ID de usuario no válido"); 
     }

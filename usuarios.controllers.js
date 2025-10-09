@@ -8,7 +8,7 @@ export async function registrarUsuario(req, res) {
     res.status(201).json({
       mensaje: "Usuario registrado correctamente",
       usuario: nuevoUsuario
-    });
+    }); 
   } catch (error) {
     res.status(400).json({ error: "Error al registrar el usuario" });
   }
