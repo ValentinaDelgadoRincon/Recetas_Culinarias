@@ -111,7 +111,7 @@ export async function eliminarUsuario(id) {
 
     // Validar ID
     if (!ObjectId.isValid(id)) {
-        throw new Error("ID de usuario no válido");
+        throw new Error("ID de usuario no válido"); 
     }
 
     // Buscar si el usuario existe

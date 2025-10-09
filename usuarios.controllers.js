@@ -14,7 +14,7 @@ export async function registrarUsuario(req, res) {
   }
 }
 
-// Consultar la lista de todos los usuarios registrados
+// Consultar la lista de todos los usuarios registrados 
 
 export async function obtenerTodosLosUsuarios(req, res) {
   try {
