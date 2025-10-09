@@ -14,10 +14,10 @@ import { validationDTO } from "../middlewares/validationDTO";
 const router = Router();
 
 router.post("/",crearRecetaDTO,validationDTO,crearRecetas);
-router.get("/",listarReceta);
-router.get("/",consultarRecetas);
+router.get("/listar",listarReceta);
+router.get("/consultar",consultarRecetas);
 router.patch("/",editarTituloRecetaDTO,validationDTO,editarReceta);
 router.delete("/",eliminarRecetas);
-router.get("/",recetaUserEspecifico);
+router.get("/usario",recetaUserEspecifico);
 
 export default router;
