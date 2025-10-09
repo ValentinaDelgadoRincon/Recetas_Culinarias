@@ -5,7 +5,7 @@ import {
     editarTituloReceta,
     eliminarReceta,
     recetasUsuarioEspecifico
-} from "./gestionRecetas.services";
+} from "../services/gestionRecetas.services.js";
 
 export async function crearRecetas(req, res) {
     try {

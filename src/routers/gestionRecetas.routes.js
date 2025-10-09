@@ -6,10 +6,10 @@ import {
     editarReceta,
     eliminarRecetas,
     recetaUserEspecifico
-} from "./gestionRecestas.controllers";
+} from "../controllers/gestionRecestas.controllers.js";
 
-import { crearRecetaDTO, editarTituloRecetaDTO } from "./recetas.dto";
-import { validationDTO } from "./validationDTO";
+import { crearRecetaDTO, editarTituloRecetaDTO } from "../dtos/recetas.dto";
+import { validationDTO } from "../middlewares/validationDTO";
 
 const router = Router();
 
