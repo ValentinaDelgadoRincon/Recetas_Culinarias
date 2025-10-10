@@ -30,25 +30,25 @@ import { validationDTO } from "../middlewares/validationDTO.js";
 
 const router = Router();
 //recetas
-router.post("/",crearRecetaDTO,validationDTO,crearRecetas);
-router.get("/listar",listarReceta);
-router.get("/consultar/:id",consultarRecetas);
-router.patch("/:id",editarTituloRecetaDTO,validationDTO,editarReceta);
-router.delete("/:id",eliminarRecetas);
-router.get("/usuario",recetaUserEspecifico);
+router.post("/recetas",crearRecetaDTO,validationDTO,crearRecetas);
+router.get("/recetas/listar",listarReceta);
+router.get("/recetas/usuario",recetaUserEspecifico);
+router.get("/recetas/:id",consultarRecetas);
+router.patch("/recetas/:id",editarTituloRecetaDTO,validationDTO,editarReceta);
+router.delete("/recetas/:id",eliminarRecetas);
 
 //usuarios
-router.post("/",crearUsuarioDTO,validationDTO,registrarUsuario);
-router.get("/",obtenerTodosLosUsuarios);
-router.get("/:id",obtenerUnUsuario);
-router.patch("/:id",actualizarUsuarioDTO,validationDTO,actualizarUnUsuario);
-router.delete("/:id",eliminarUsuarioDTO,validationDTO,eliminarUnUsuario);
+router.post("/usuarios",crearUsuarioDTO,validationDTO,registrarUsuario);
+router.get("/usuarios",obtenerTodosLosUsuarios);
+router.get("/usuarios/:id",obtenerUnUsuario);
+router.patch("/usuarios/:id",actualizarUsuarioDTO,validationDTO,actualizarUnUsuario);
+router.delete("/usuarios/:id",eliminarUsuarioDTO,validationDTO,eliminarUnUsuario);
 
 //ingredientes
-router.post("/",agregarIngredientesDTO,validationDTO,agregarIngredientes);
-router.get("/",verIngredientes);
-router.delete("/:id",eliminarIngredientesDTO,validationDTO,eliminarIngredientes);
-router.get("/:id",buscarRecetasPorIngredienteDTO,validationDTO,buscarRecetasPorIngredienteController)
+router.post("/recetas/:id/ingredientes",agregarIngredientesDTO,validationDTO,agregarIngredientes);
+router.get("/recetas/:id/ingredientes",verIngredientes);
+router.delete("/recetas/:id/ingredientes",eliminarIngredientesDTO,validationDTO,eliminarIngredientes);
+router.get("/ingredientes/:nombre/recetas",buscarRecetasPorIngredienteDTO,validationDTO,buscarRecetasPorIngredienteController)
 
 
 export default router;

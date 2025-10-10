@@ -38,7 +38,7 @@ export async function consultarRecetas(req, res) {
 
 export async function editarReceta(req, res) {
     try {
-        const id = parseInt(req.params.id);
+        const {id} = req.params;
         const { titulo } = req.body;
 
         if (!titulo) return res.status(400).json({ error: "Falta Título" })
@@ -51,7 +51,7 @@ export async function editarReceta(req, res) {
 
 export async function eliminarRecetas(req, res) {
     try {
-        const id = parseInt(req.params.id);
+        const {id} = req.params;
         const resultado = await eliminarReceta(id);
         res.status(200).json(resultado);
     } catch (error) {
@@ -61,10 +61,10 @@ export async function eliminarRecetas(req, res) {
 
 export async function recetaUserEspecifico(req, res) {
  try {
-    const {nombreusuario} = req.query;
+    const {nombreUsuario} = req.query;
 
-    if(!nombreusuario) return res.status(400).json({error:"Falta nombre del cliente"});
-    const resultado = await recetasUsuarioEspecifico(nombreusuario);
+    if(!nombreUsuario) return res.status(400).json({error:"Falta nombre del cliente"});
+    const resultado = await recetasUsuarioEspecifico(nombreUsuario);
     res.status(202).json(resultado)
  } catch (error) {
     res.status(500).json({error:"Error al consultar las recetas del cliente"})

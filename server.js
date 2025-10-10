@@ -2,7 +2,8 @@
 import express from "express";
 import 'dotenv/config'
 import { conectarDB } from "./src/config/db.js";
-import routercrearRecetas from "./src/routers/gestionRecetas.routes.js"
+import router from "./src/routers/gestionRecetas.routes.js";
+
 
 
 //Config
@@ -10,8 +11,7 @@ const app = express();
 app.use(express.json());
 
 //Routers
-app.use("/recetas", routercrearRecetas);
-
+app.use("/",router)
 
 app.get("/health", (req, res)=>{
     res.status(200).json({message: "Backend activo!!! "});
