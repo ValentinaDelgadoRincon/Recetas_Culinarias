@@ -79,57 +79,42 @@ export async function eliminarIngredientesDeReceta(idReceta, ingredientes) {
   const db = obtenerDB();
   const recetas = db.collection("recetas");
 
-  // Validar ID de receta
-  if (!ObjectId.isValid(idReceta)) {
-    throw new Error("ID de receta no válido");
-  }
+  if (!ObjectId.isValid(idReceta)) throw new Error("ID de receta no válido");
 
-  // Validar payload
-  if (!Array.isArray(ingredientes) || ingredientes.length === 0) {
-    throw new Error("Debe enviar una lista de ingredientes (IDs o nombres)");
-  }
+  if (!Array.isArray(ingredientes) || ingredientes.length === 0)
+    throw new Error("Debe enviar una lista de ingredientes");
 
-  // Verificar que la receta exista
   const receta = await recetas.findOne({ _id: new ObjectId(idReceta) });
   if (!receta) throw new Error("Receta no encontrada");
 
-  // Separar los valores que parecen ObjectId de los que no (nombres)
+  // Filtrar por nombres o IDs válidos
   const idsValidos = ingredientes
     .filter((i) => ObjectId.isValid(i))
     .map((i) => new ObjectId(i));
   const nombres = ingredientes.filter((i) => !ObjectId.isValid(i));
 
-  // Construir filtro $pull de forma segura según qué se envió
-  let pullFilter;
+  let filtroPull = {};
   if (idsValidos.length > 0 && nombres.length > 0) {
-    pullFilter = {
+    filtroPull = {
       $or: [{ _id: { $in: idsValidos } }, { nombre: { $in: nombres } }],
     };
   } else if (idsValidos.length > 0) {
-    pullFilter = { _id: { $in: idsValidos } };
+    filtroPull = { _id: { $in: idsValidos } };
   } else {
-    pullFilter = { nombre: { $in: nombres } };
+    filtroPull = { nombre: { $in: nombres } };
   }
 
   const resultado = await recetas.updateOne(
     { _id: new ObjectId(idReceta) },
-    { $pull: { ingredientes: pullFilter } }
+    { $pull: { ingredientes: filtroPull } }
   );
 
-  // Resultado: validaciones y mensajes claros
-  if (resultado.matchedCount === 0) {
-    throw new Error("Receta no encontrada");
-  }
+  if (resultado.matchedCount === 0) throw new Error("Receta no encontrada");
 
-  if (resultado.modifiedCount === 0) {
-    // No modificó el documento: significa que no hubo coincidencias con los ids/nombres enviados
-    return {
-      mensaje:
-        "No se eliminaron ingredientes (no se encontraron coincidencias con los IDs/nombres enviados)",
-      idReceta,
-      revisado: { enviados: ingredientes },
-    };
-  }
+  if (resultado.modifiedCount === 0)
+    throw new Error(
+      "No se eliminaron ingredientes (verifique los nombres o IDs)"
+    );
 
   return {
     mensaje: "Ingredientes eliminados correctamente",
@@ -137,6 +122,7 @@ export async function eliminarIngredientesDeReceta(idReceta, ingredientes) {
     ingredientesEliminados: ingredientes,
   };
 }
+
 // Buscar recetas por ingrediente
 export async function buscarRecetasPorIngrediente(nombreIngrediente) {
   const db = obtenerDB();
