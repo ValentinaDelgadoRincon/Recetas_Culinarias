@@ -26,34 +26,40 @@ export async function verIngredientes(req, res) {
 }
 
 // Eliminar ingredientes de una receta
-
 export async function eliminarIngredientes(req, res) {
   try {
     const idReceta = req.params.id;
-    const { nombresIngredientes } = req.body;
+    const { idsIngredientes } = req.body;
 
+    // Validar datos del body
     if (
-      !Array.isArray(nombresIngredientes) ||
-      nombresIngredientes.length === 0
+      !idsIngredientes ||
+      !Array.isArray(idsIngredientes) ||
+      idsIngredientes.length === 0
     ) {
       return res.status(400).json({
-        mensaje:
-          "Debes enviar un array con los nombres de los ingredientes a eliminar",
+        error:
+          "Debe enviar un array con los IDs de los ingredientes a eliminar",
       });
     }
 
+    // Llamar al servicio
     const resultado = await eliminarIngredientesDeReceta(
       idReceta,
-      nombresIngredientes
+      idsIngredientes
     );
 
-    res.status(200).json(resultado);
+    res.status(200).json({
+      mensaje: "Ingredientes eliminados correctamente",
+      resultado,
+    });
   } catch (error) {
-    res.status(500).json({ mensaje: error.message });
+    console.error("Error en eliminarIngredientes:", error.message);
+    res.status(400).json({
+      error: error.message || "Error al eliminar ingrediente",
+    });
   }
 }
-
-
 // Buscar todas las recetas que contengan un ingrediente específico (ej. “pollo” muestra todas las recetas que lo usan)
 export async function buscarRecetasPorIngredienteController(req, res) {
     try {
