@@ -74,44 +74,51 @@ export async function obtenerIngredientesDeReceta(idReceta) {
   };
 }
 
-// Eliminar ingredientes de una receta
-export async function eliminarIngredientesDeReceta(idReceta, idsIngredientes) {
-  const db = obtenerDB();
-  const recetas = db.collection("recetas");
 
-  // Validar IDs
-  if (!ObjectId.isValid(idReceta)) {
-    throw new Error("ID de receta no válido");
+// Eliminar ingredientes
+export async function eliminarIngredientesDeReceta(
+  idReceta,
+  nombresIngredientes
+) {
+  try {
+    const db = obtenerDB();
+    const recetasCollection = db.collection("recetas");
+
+    // Buscar la receta
+    const receta = await recetasCollection.findOne({
+      _id: new ObjectId(idReceta),
+    });
+    if (!receta) {
+      throw new Error("La receta no existe");
+    }
+
+    // Filtrar los ingredientes que NO se eliminarán
+    const ingredientesActualizados = receta.ingredientes.filter(
+      (ing) => !nombresIngredientes.includes(ing)
+    );
+
+    // Actualizar la receta en la base de datos
+    const resultado = await recetasCollection.updateOne(
+      { _id: new ObjectId(idReceta) },
+      { $set: { ingredientes: ingredientesActualizados } }
+    );
+
+    if (resultado.modifiedCount === 0) {
+      throw new Error("No se modificó la receta");
+    }
+
+    // Obtener la receta actualizada
+    const recetaActualizada = await recetasCollection.findOne({
+      _id: new ObjectId(idReceta),
+    });
+
+    return {
+      mensaje: "Ingredientes eliminados correctamente",
+      recetaActualizada,
+    };
+  } catch (error) {
+    throw new Error(error.message);
   }
-
-  if (!Array.isArray(idsIngredientes) || idsIngredientes.length === 0) {
-    throw new Error("Debe enviar una lista de IDs de ingredientes");
-  }
-
-  // Verificar que la receta exista
-  const receta = await recetas.findOne({ _id: new ObjectId(idReceta) });
-  if (!receta) {
-    throw new Error("Receta no encontrada");
-  }
-
-  // Convertir los IDs de los ingredientes a ObjectId
-  const objectIds = idsIngredientes.map((id) => new ObjectId(id));
-
-  // Eliminar los ingredientes cuyo _id esté en la lista
-  const resultado = await recetas.updateOne(
-    { _id: new ObjectId(idReceta) },
-    { $pull: { ingredientes: { _id: { $in: objectIds } } } }
-  );
-
-  if (resultado.modifiedCount === 0) {
-    throw new Error("No se eliminaron ingredientes (verifique los IDs)");
-  }
-
-  return {
-    mensaje: "Ingredientes eliminados correctamente",
-    idReceta,
-    ingredientesEliminados: idsIngredientes,
-  };
 }
 
 // Buscar recetas por ingrediente
