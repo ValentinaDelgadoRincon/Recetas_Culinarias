@@ -100,7 +100,7 @@ export async function eliminarIngredientesDeReceta(idReceta, idsIngredientes) {
     // Eliminar los ingredientes de la receta
     const resultado = await recetas.updateOne(
         { _id: new ObjectId(idReceta) },
-        { $pull: { ingredientes: { _id: { $in: objectIds } } } }
+        { $pull: { ingredientes: { nombre: { $in: idsIngredientes } } } }
     );
 
     if (resultado.modifiedCount === 0) {
