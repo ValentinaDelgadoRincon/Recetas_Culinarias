@@ -75,34 +75,34 @@ export async function obtenerIngredientesDeReceta(idReceta) {
 }
 
 // Eliminar ingredientes de una receta
-export async function eliminarIngredientesDeReceta(
-  idReceta,
-  nombresIngredientes
-) {
+export async function eliminarIngredientesDeReceta(idReceta, nombresIngredientes) {
   const db = obtenerDB();
   const recetas = db.collection("recetas");
 
   // Validaciones
-  if (!ObjectId.isValid(idReceta)) {
-    throw new Error("ID de receta no válido");
-  }
-
-  if (!Array.isArray(nombresIngredientes) || nombresIngredientes.length === 0) {
+  if (!ObjectId.isValid(idReceta)) throw new Error("ID de receta no válido");
+  if (!Array.isArray(nombresIngredientes) || nombresIngredientes.length === 0)
     throw new Error("Debe enviar una lista de nombres de ingredientes");
-  }
 
   // Verificar que la receta exista
   const receta = await recetas.findOne({ _id: new ObjectId(idReceta) });
   if (!receta) throw new Error("Receta no encontrada");
 
-  // Eliminar ingredientes cuyos nombres coincidan
+  // Crear regex para cada nombre (insensible a mayúsculas y espacios)
+  const regexNombres = nombresIngredientes.map(
+    (nombre) => new RegExp(`^\\s*${nombre.trim()}\\s*$`, "i")
+  );
+
+  // Usar $pull para eliminar del array los objetos que tengan nombre coincidente
   const resultado = await recetas.updateOne(
     { _id: new ObjectId(idReceta) },
-    { $pull: { ingredientes: { nombre: { $in: nombresIngredientes } } } }
+    { $pull: { ingredientes: { nombre: { $in: regexNombres } } } }
   );
 
   if (resultado.modifiedCount === 0) {
-    throw new Error("No se eliminaron ingredientes (verifique los nombres)");
+    throw new Error(
+      "No se eliminaron ingredientes (verifique los nombres y que existan en la receta)"
+    );
   }
 
   return {
