@@ -46,7 +46,6 @@ async function seed() {
     const recetas = [
         {
             _id: new ObjectId("671f00000000000000000301"),
-            id: 1,
             titulo: "Dona rellena de chocolate",
             descripcion: "Dona esponjosa con relleno de chocolate derretido.",
             ingredientes: [
@@ -59,7 +58,6 @@ async function seed() {
         },
         {
             _id: new ObjectId("671f00000000000000000302"),
-            id: 2,
             titulo: "Pan de vainilla",
             descripcion: "Pan artesanal con sabor a vainilla y un toque dulce.",
             ingredientes: [
@@ -71,7 +69,6 @@ async function seed() {
         },
         {
             _id: new ObjectId("671f00000000000000000303"),
-            id: 3,
             titulo: "Brownie clásico",
             descripcion: "Brownie húmedo con intenso sabor a chocolate.",
             ingredientes: [

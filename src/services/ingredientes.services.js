@@ -95,12 +95,22 @@ export async function eliminarIngredientesDeReceta(idReceta, idsIngredientes) {
     }
 
     // Convertir los IDs de los ingredientes a ObjectId
-    const objectIds = idsIngredientes.map(id => new ObjectId(id));
+    const ids = ingredientesAEliminar.filter(id => ObjectId.isValid(id)).map(id => new ObjectId(id));
+    const nombres = ingredientesAEliminar.filter(id => !ObjectId.isValid(id));
 
     // Eliminar los ingredientes de la receta
     const resultado = await recetas.updateOne(
         { _id: new ObjectId(idReceta) },
-        { $pull: { ingredientes: { _id: { $in: objectIds } } } }
+        {
+            $pull: {
+                ingredientes: {
+                    $or: [
+                        { _id: { $in: ids } },
+                        { nombre: { $in: nombres } }
+                    ]
+                }
+            }
+        }
     );
 
     if (resultado.modifiedCount === 0) {
@@ -110,7 +120,7 @@ export async function eliminarIngredientesDeReceta(idReceta, idsIngredientes) {
     return {
         mensaje: "Ingredientes eliminados correctamente",
         idReceta,
-        ingredientesEliminados: idsIngredientes
+        ingredientesEliminados: ingredientesAEliminar
     };
 }
 
