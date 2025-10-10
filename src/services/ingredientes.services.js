@@ -23,11 +23,17 @@ export async function agregarIngredientesAReceta(idReceta, ingredientes) {
     }
 
     // Cada ingrediente debe tener al menos un nombre
-    const ingredientesValidos = ingredientes.map(ing => ({
+    const ingredientesValidos = ingredientes.map(ing => {
+    if (!ing.nombre || typeof ing.nombre !== "string" || ing.nombre.trim() === "") {
+        throw new Error("Cada ingrediente debe tener un nombre válido");
+    }
+    return {
         _id: new ObjectId(),
-        nombre: ing.nombre,
+        nombre: ing.nombre.trim(),
         idReceta: new ObjectId(idReceta)
-    }));
+    };
+});
+
 
     // Actualizar la receta agregando los ingredientes (crea el array si no existe)
     const resultado = await recetas.updateOne(
@@ -79,13 +85,14 @@ export async function eliminarIngredientesDeReceta(idReceta, idsIngredientes) {
     const db = obtenerDB();
     const recetas = db.collection("recetas");
 
-    // Validar IDs
+    // Validar ID de la receta
     if (!ObjectId.isValid(idReceta)) {
         throw new Error("ID de receta no válido");
     }
 
+    // Validar lista de ingredientes
     if (!Array.isArray(idsIngredientes) || idsIngredientes.length === 0) {
-        throw new Error("Debe enviar una lista de IDs de ingredientes");
+        throw new Error("Debe enviar una lista de IDs o nombres de ingredientes");
     }
 
     // Verificar que la receta exista
@@ -94,9 +101,16 @@ export async function eliminarIngredientesDeReceta(idReceta, idsIngredientes) {
         throw new Error("Receta no encontrada");
     }
 
-    // Convertir los IDs de los ingredientes a ObjectId
-    const ids = ingredientesAEliminar.filter(id => ObjectId.isValid(id)).map(id => new ObjectId(id));
-    const nombres = ingredientesAEliminar.filter(id => !ObjectId.isValid(id));
+    // Separar los ingredientes por IDs válidos y nombres
+    const idsValidos = idsIngredientes
+        .filter(id => ObjectId.isValid(id))
+        .map(id => new ObjectId(id));
+
+    const nombresInvalidos = idsIngredientes
+        .filter(id => !ObjectId.isValid(id));
+
+    console.log("IDs válidos:", idsValidos);
+    console.log("Nombres inválidos:", nombresInvalidos);
 
     // Eliminar los ingredientes de la receta
     const resultado = await recetas.updateOne(
@@ -105,8 +119,8 @@ export async function eliminarIngredientesDeReceta(idReceta, idsIngredientes) {
             $pull: {
                 ingredientes: {
                     $or: [
-                        { _id: { $in: ids } },
-                        { nombre: { $in: nombres } }
+                        { _id: { $in: idsValidos } },
+                        { nombre: { $in: nombresInvalidos } }
                     ]
                 }
             }
@@ -114,15 +128,16 @@ export async function eliminarIngredientesDeReceta(idReceta, idsIngredientes) {
     );
 
     if (resultado.modifiedCount === 0) {
-        throw new Error("No se eliminaron ingredientes (verifique los IDs)");
+        throw new Error("No se eliminaron ingredientes (verifique los IDs o nombres)");
     }
 
     return {
         mensaje: "Ingredientes eliminados correctamente",
         idReceta,
-        ingredientesEliminados: ingredientesAEliminar
+        ingredientesEliminados: idsIngredientes
     };
 }
+
 
 // Buscar recetas por ingrediente
 export async function buscarRecetasPorIngrediente(nombreIngrediente) {
