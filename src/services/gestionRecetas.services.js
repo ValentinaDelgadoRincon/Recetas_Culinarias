@@ -1,30 +1,43 @@
-import {obtenerDB} from "../config/db.js";
+import { obtenerDB } from "../config/db.js";
+import { ObjectId } from "mongodb";
+
 
 const COLECCION_RECETA = "recetas"
 const COLECCION_INGREDIENTES = "ingredientes";
 const COLECCION_USUARIO = "usuarios";
 
 export async function crearReceta(datos) {
-    const {id, titulo,descripcion,ingredientes = []} = datos;
-    if(!id || !titulo || !descripcion || ingredientes.length===0){
+    const { titulo, descripcion, ingredientes = [], idUsuario } = datos;
+    if (!titulo || !descripcion || ingredientes.length === 0) {
         throw new Error("Falta algún campo");
     }
-    
-    const ingredientesExistentes = await obtenerDB().collection(COLECCION_INGREDIENTES).find({nombre:{$in:ingredientes}}).toArray();
-    const ingredientesEcontrados = ingredientesExistentes.map(i=>i.nombre);
-    const ingredientesFaltantes = ingredientes.filter(i=> !ingredientesEcontrados.includes(i));
+    if (idUsuario) {
+        if (!ObjectId.isValid(idUsuario)) {
+            throw new Error("ID de usuario no válido");
+        }
+        const usuario = await obtenerDB()
+            .collection(COLECCION_USUARIO)
+            .findOne({ _id: new ObjectId(idUsuario) });
 
-    if(ingredientesFaltantes.length > 0) throw new Error(`No existen los ingredientes: ${ingredientesFaltantes}`);
+        if (!usuario) {
+            throw new Error("Usuario no encontrado");
+        }
+    }
+
+    const ingredientesExistentes = await obtenerDB().collection(COLECCION_INGREDIENTES).find({ nombre: { $in: ingredientes } }).toArray();
+    const ingredientesEcontrados = ingredientesExistentes.map(i => i.nombre);
+    const ingredientesFaltantes = ingredientes.filter(i => !ingredientesEcontrados.includes(i));
+
+    if (ingredientesFaltantes.length > 0) throw new Error(`No existen los ingredientes: ${ingredientesFaltantes}`);
 
     const receta = {
-        id,
         titulo,
         descripcion,
         ingredientes
     }
-    
+
     await obtenerDB().collection(COLECCION_RECETA).insertOne(receta);
-    return {message : "Nueva receta creada"};
+    return { message: "Nueva receta creada" };
 }
 
 export async function listarRecetas() {
@@ -32,33 +45,37 @@ export async function listarRecetas() {
     return recetas;
 }
 
-export async function consultarReceta(id) {
-    const receta = await obtenerDB().collection(COLECCION_RECETA).findOne({id});
+export async function consultarReceta(id) {//corregir
+    const filtro = ObjectId.isValid(id)
+        ? { _id: new ObjectId(id) }
+        : { id: Number(id) };
 
-    if(!receta) throw new Error("Receta no encontrada");
-    
-    const ingredientes = await obtenerDB().collection(COLECCION_INGREDIENTES).find({nombre:{$in:receta.ingredientes}}).toArray();
+    const receta = await obtenerDB().collection(COLECCION_RECETA).findOne(filtro);
+
+    if (!receta) throw new Error("Receta no encontrada");
+
+    const ingredientes = await obtenerDB().collection(COLECCION_INGREDIENTES).find({ nombre: { $in: receta.ingredientes } }).toArray();
     return ingredientes;
 }
 
-export async function editarTituloReceta(id,titulo) {
-    const resultado = await obtenerDB().collection(COLECCION_RECETA).updateOne({id},{$set:{titulo}});
+export async function editarTituloReceta(id, titulo) {
+    const resultado = await obtenerDB().collection(COLECCION_RECETA).updateOne({ id }, { $set: { titulo } });
     if (resultado.matchedCount === 0) throw new Error("Receta no encontrada");
-    return {message:"Titulo de la receta modificado"};
+    return { message: "Titulo de la receta modificado" };
 }
 
 export async function eliminarReceta(id) {
-    const resultado = await obtenerDB().collection(COLECCION_RECETA).deleteOne({id});
+    const resultado = await obtenerDB().collection(COLECCION_RECETA).deleteOne({ id });
     if (resultado.deletedCount === 0) throw new Error("Receta no encontrada");
-    return{message:"Receta eliminada"}
+    return { message: "Receta eliminada" }
 }
 
 export async function recetasUsuarioEspecifico(nombreUsuario) {
-    const usuario = await obtenerDB().collection(COLECCION_USUARIO).find({nombre:nombreUsuario});
+    const usuario = await obtenerDB().collection(COLECCION_USUARIO).find({ nombre: nombreUsuario });
 
-    if(!usuario) throw new Error("Usuario no encontrado");
-    const recetas = await obtenerDB().collection(COLECCION_RECETA).find({usuario:nombreUsuario}).toArray();
+    if (!usuario) throw new Error("Usuario no encontrado");
+    const recetas = await obtenerDB().collection(COLECCION_RECETA).findOne({ usuario: nombreUsuario }).toArray();
 
-    if(recetas.length === 0) throw new Error("No hay recetas registradas");
+    if (recetas.length === 0) throw new Error("No hay recetas registradas");
     return recetas;
 }  

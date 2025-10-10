@@ -17,7 +17,7 @@ export async function conectarDB() {
     }
 }
 
-export async function obtenerDB() {
+export function obtenerDB() {
     if(!db) throw new Error("No se ha conectado la DB");
     return db;
 }

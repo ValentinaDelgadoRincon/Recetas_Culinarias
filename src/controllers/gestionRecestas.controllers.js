@@ -27,7 +27,7 @@ export async function listarReceta(req, res) {
 
 export async function consultarRecetas(req, res) {
     try {
-        const id = parseInt(req.params.id);
+        const id = req.params.id;
         const receta = await consultarReceta(id);
         if (!receta) return res.status(404).json({ error: "Receta no encontrada" });
         res.status(200).json(receta)
